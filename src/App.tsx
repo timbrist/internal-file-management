@@ -1,5 +1,6 @@
 
 import './App.css'
+import Bulletin from './components/Bulletin'
 import Clipboard from './components/Clipboard'
 
 
@@ -8,8 +9,16 @@ function App() {
 
   return (
     <>
-      <h1 className="text-xl font-bold"> this is app page</h1>
-      <Clipboard/>
+      <div className='
+      min-h-screen
+      flex flex-col gap-5
+      border border-gray-500 
+      items-center justify-center
+      '
+      >
+        <Bulletin />
+        <Clipboard/>
+      </div>
 
     </>
   )
