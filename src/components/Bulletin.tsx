@@ -1,9 +1,18 @@
 import { useEffect, useState } from "react";
 
-
+type ChatMsg ={
+    ok:boolean;
+    text:string;
+    image?:{
+        name:string;
+        type:string;
+        size:number;
+        dataUrl:string;
+    }|null;
+}
 
 export default function Bulletin(){
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState<ChatMsg|null>(null);
     const [error, setError] = useState("");
 
     useEffect( () => {
@@ -11,8 +20,8 @@ export default function Bulletin(){
             try {
                 const res = await fetch("/api/msg");
                 if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-                const text = await res.text();
-                setMessage(text);
+                const data = await res.json();
+                setMessage(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "Unknown error");
             }
@@ -24,8 +33,13 @@ export default function Bulletin(){
 
     return(
         <div className="border border-red-500">
-            <p>{error || message}</p>
-            <img />
+            {error && <p>{error}</p>}
+            {message &&
+                <div>
+                    {message.image && <img src={message.image.dataUrl} alt={message.image.name} />}
+                    <p>{message.text}</p>
+                </div>
+            }
             <button></button>
         </div>
     );
