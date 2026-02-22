@@ -48,11 +48,11 @@ export default function Clipboard(){
         const fd = new FormData();
         fd.append("text", text);
         if (image) fd.append("image", image);
-        const res = await fetch("http://localhost:3001/api/message", {
+        const res = await fetch("/api/message", {
             method: "POST",
             body: fd,
         });
-        
+
         if (!res.ok) {
             const errText = await res.text();
             throw new Error(errText || "Upload failed");
