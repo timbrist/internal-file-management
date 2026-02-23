@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 
 
 
@@ -28,6 +28,16 @@ export default function Clipboard( {onSent}:{onSent:(refreshKey:boolean)=>void})
                 }
             }
         }
+    };
+
+    const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] ?? null;
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            e.target.value = "";
+            return;
+        }
+        setImage(file);
     };
 
     //whenever image changes, call this effect
@@ -78,7 +88,7 @@ export default function Clipboard( {onSent}:{onSent:(refreshKey:boolean)=>void})
                     </div>
                 }
             </div>
-            <div className="flex gap-2.5 w-full ">
+            <div className="relative flex gap-2.5 w-full ">
                 <textarea 
                     value={text}
                     onChange={(e)=>{setText(e.target.value)}}
@@ -95,6 +105,22 @@ export default function Clipboard( {onSent}:{onSent:(refreshKey:boolean)=>void})
                     >
                     Send
                 </button>
+                <input
+                    id="upload-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUpload}
+                    className="hidden"
+                />
+                <label
+                    htmlFor="upload-image"
+                    className="absolute bottom-2 left-2 cursor-pointer
+                        h-8 rounded-xl px-4 py-2 text-sm font-semibold text-gray
+                        hover:shadow-md hover:shadow-blue-600/40
+                        active:translate-y-px"
+                >
+                    +
+                </label>
             </div>
         </div>
     );
