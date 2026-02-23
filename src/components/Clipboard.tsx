@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 
 
-export default function Clipboard(){
+export default function Clipboard( {onSent}:{onSent:(refreshKey:boolean)=>void}){
     //handle text 
     const [text, setText] = useState("");
 
@@ -60,6 +60,8 @@ export default function Clipboard(){
 
         const data = await res.json();
         console.log("server response:", data);
+        setText("");
+        setImage(null)
     };
 
     return (
@@ -78,12 +80,13 @@ export default function Clipboard(){
             </div>
             <div className="flex gap-2.5 w-full ">
                 <textarea 
+                    value={text}
                     onChange={(e)=>{setText(e.target.value)}}
                     onPaste={handlePaste} placeholder="Message..." 
                     className="h-28 flex-1 resize-none bg-transparent px-1.5 py-2 text-base leading-[22px] outline-none">
                 </textarea>
                 <button 
-                    onClick={()=>handleSubmit({text,image})}
+                    onClick={()=>{handleSubmit({text,image});onSent(true);}}
                     className="
                         h-8 rounded-xl px-4 py-2 text-sm font-semibold text-gray
                         hover:shadow-md hover:shadow-blue-600/40

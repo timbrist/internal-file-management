@@ -1,4 +1,5 @@
 
+import { useState } from 'react'
 import './App.css'
 import Bulletin from './components/Bulletin'
 import Clipboard from './components/Clipboard'
@@ -6,7 +7,10 @@ import Clipboard from './components/Clipboard'
 
 function App() {
 
+  const [refreshKey, setRefreshKey] = useState<boolean>(false);
 
+  const handleOnSent = (re:boolean)=>{ setRefreshKey(re)}
+  const handleRefreshChange = (re:boolean)=>{ setRefreshKey(re)}
   return (
     <>
       <div className='
@@ -16,8 +20,8 @@ function App() {
       items-center justify-center
       '
       >
-        <Bulletin />
-        <Clipboard/>
+        <Bulletin refreshKey={refreshKey} onRefreshChange={handleRefreshChange} />
+        <Clipboard onSent={handleOnSent}/>
       </div>
 
     </>
