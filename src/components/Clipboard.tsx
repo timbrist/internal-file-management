@@ -65,7 +65,7 @@ export default function Clipboard( {onSent}:{onSent:(refreshKey:boolean)=>void})
     };
 
     return (
-        <div className="flex flex-col items-center w-150 border border-gray-500 rounded-xl shadow-md">
+        <div className="clipboard flex flex-col items-center w-[80vw] border border-gray-500 rounded-xl shadow-md">
             <div className="relative ">
                 {previewUrl && 
                     <div className="image-preview">

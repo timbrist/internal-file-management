@@ -59,7 +59,7 @@ export default function Bulletin(
         <>
         {/* <p>refreshKey: {refreshKey.toString()}</p> */}
         {refreshKey && (
-        <div className="bulletin relative border border-gray-500 px-4 py-2 rounded-xl shadow-md">
+        <div className="bulletin relative w-[80vw] border border-gray-500 px-4 py-2 rounded-xl shadow-md">
             {error && <p>{error}</p>}
             {message && ( 
                 <div >
