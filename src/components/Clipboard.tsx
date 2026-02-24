@@ -1,10 +1,12 @@
 import { useEffect, useState, type ChangeEvent } from "react";
+import type { ChatMsg } from "../App";
 
 
 
-export default function Clipboard( {onSent}:{onSent:(refreshKey:boolean)=>void}){
+export default function Clipboard( {onSent}:{onSent:(savedMessage: ChatMsg)=>void}){
     //handle text 
     const [text, setText] = useState("");
+    const [error, setError] = useState("");
 
     //Allow to paste image and have a preview image.
     const [image, setImage] = useState<File |null>(null);
@@ -68,14 +70,26 @@ export default function Clipboard( {onSent}:{onSent:(refreshKey:boolean)=>void})
             throw new Error(errText || "Upload failed");
         }
 
-        const data = await res.json();
+        const data: ChatMsg = await res.json();
         console.log("server response:", data);
         setText("");
-        setImage(null)
+        setImage(null);
+        setError("");
+        return data;
+    };
+
+    const handleSend = async () => {
+        try {
+            const savedMessage = await handleSubmit({ text, image });
+            onSent(savedMessage);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Upload failed");
+        }
     };
 
     return (
         <div className="clipboard flex flex-col items-center w-[80vw] border border-gray-500 rounded-xl shadow-md">
+            {error && <p>{error}</p>}
             <div className="relative ">
                 {previewUrl && 
                     <div className="image-preview">
@@ -96,7 +110,7 @@ export default function Clipboard( {onSent}:{onSent:(refreshKey:boolean)=>void})
                     className="h-28 flex-1 resize-none bg-transparent px-1.5 py-2 text-base leading-[22px] outline-none">
                 </textarea>
                 <button 
-                    onClick={()=>{handleSubmit({text,image});onSent(true);}}
+                    onClick={handleSend}
                     className="
                         h-8 rounded-xl px-4 py-2 text-sm font-semibold text-gray
                         hover:shadow-md hover:shadow-blue-600/40

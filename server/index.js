@@ -8,6 +8,8 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // In-memory cache of the latest submitted message.
 const latestMessage = {
+  messageId: 0,
+  updatedAt: null,
   text: "",
   image: null,
 };
@@ -23,6 +25,8 @@ app.post("/api/message", upload.single("image"), (req, res) => {
   }
 
   latestMessage.text = text;
+  latestMessage.messageId += 1;
+  latestMessage.updatedAt = new Date().toISOString();
   latestMessage.image = file
     ? {
         name: file.originalname,
@@ -34,8 +38,10 @@ app.post("/api/message", upload.single("image"), (req, res) => {
 
   res.json({
     ok: true,
-    receivedText: latestMessage.text,
-    receivedImage: latestMessage.image,
+    messageId: latestMessage.messageId,
+    updatedAt: latestMessage.updatedAt,
+    text: latestMessage.text,
+    image: latestMessage.image,
   });
 });
 
@@ -43,6 +49,8 @@ app.post("/api/message", upload.single("image"), (req, res) => {
 app.get("/api/msg", (req, res) => {
   res.json({
     ok: true,
+    messageId: latestMessage.messageId,
+    updatedAt: latestMessage.updatedAt,
     text: latestMessage.text,
     image: latestMessage.image,
   });
