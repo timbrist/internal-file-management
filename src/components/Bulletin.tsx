@@ -8,6 +8,9 @@ export default function Bulletin(
         onDelete: () => Promise<void>;
     }
 ){
+    const hasMessage = Boolean(message && (message.text.trim() || message.image));
+    if (!hasMessage) return null;
+
     const handleOnclick = async () =>{
         await onDelete();
     };
