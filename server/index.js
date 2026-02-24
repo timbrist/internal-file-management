@@ -45,7 +45,7 @@ app.post("/api/message", upload.single("image"), (req, res) => {
   });
 });
 
-//TODO: Get Method: sent the text+image back to client asked.
+//Get Method: sent the text+image back to client asked.
 app.get("/api/msg", (req, res) => {
   res.json({
     ok: true,
