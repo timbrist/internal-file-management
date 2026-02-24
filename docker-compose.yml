@@ -1,0 +1,43 @@
+name: clipboard
+
+networks:
+  web:
+    external: true
+  internal:
+    driver: bridge
+
+services:
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: clipboard-backend
+    restart: unless-stopped
+    networks:
+      - internal
+    environment:
+      - PORT=3001
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clipboard-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - web
+      - internal
+    labels:
+    # change the host address to your domain
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.clipboard.rule=Host(`clipboard.localhost`) || Host(`www.clipboard.localhost`)
+      - traefik.http.routers.clipboard.entrypoints=websecure
+      - traefik.http.routers.clipboard.tls.certresolver=letsencrypt
+      - traefik.http.services.clipboard.loadbalancer.server.port=80
+      - traefik.http.routers.clipboard-http.rule=Host(`clipboard.localhost`) || Host(`www.clipboard.localhost`)
+      - traefik.http.routers.clipboard-http.entrypoints=web
+      - traefik.http.routers.clipboard-http.middlewares=clipboard-redir
+      - traefik.http.middlewares.clipboard-redir.redirectscheme.scheme=https
