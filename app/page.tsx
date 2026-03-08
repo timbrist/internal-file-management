@@ -1,9 +1,5 @@
-import LogoutBtn from "./components/LogoutBtn";
+import ChatApp from "./components/ChatApp";
 
 export default function Home() {
-  return (
-    <>
-    <LogoutBtn />
-    </>
-  );
+  return <ChatApp />;
 }
