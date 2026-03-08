@@ -71,6 +71,9 @@ export async function GET(req: NextRequest) {
   }
 
   const messages = await prisma.message.findMany({
+    where: {
+      deletedAt: null,
+    },
     include: {
       attachments: {
         orderBy: {

@@ -106,7 +106,7 @@ export default function ChatApp() {
         method: "DELETE",
       });
 
-      const payload = await parseJsonSafe<Message | { error?: string }>(response);
+      const payload = await parseJsonSafe<{ error?: string }>(response);
       if (!response.ok) {
         throw new Error(
           payload && "error" in payload && payload.error
@@ -115,11 +115,7 @@ export default function ChatApp() {
         );
       }
 
-      if (payload && !("error" in payload)) {
-        setMessages((previous) =>
-          previous.map((message) => (message.id === id ? (payload as Message) : message)),
-        );
-      }
+      setMessages((previous) => previous.filter((message) => message.id !== id));
     } catch (deleteError) {
       setError(
         deleteError instanceof Error ? deleteError.message : "Failed to delete message",
