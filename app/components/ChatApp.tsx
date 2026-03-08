@@ -17,6 +17,7 @@ async function parseJsonSafe<T>(response: Response): Promise<T | null> {
 export default function ChatApp() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [sending, setSending] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +49,12 @@ export default function ChatApp() {
   useEffect(() => {
     void loadMessages();
   }, [loadMessages]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadMessages();
+    setRefreshing(false);
+  };
 
   const handleCreate = async ({
     text,
@@ -131,7 +138,17 @@ export default function ChatApp() {
             Text, pasted screenshots, uploads, and drag-and-drop attachments.
           </p>
         </div>
-        <LogoutBtn />
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="btn btn-sm btn-outline"
+            disabled={loading || refreshing}
+            onClick={() => void handleRefresh()}
+          >
+            {refreshing ? "Refreshing..." : "Refresh"}
+          </button>
+          <LogoutBtn />
+        </div>
       </header>
 
       {error && <p className="alert alert-error text-sm">{error}</p>}
