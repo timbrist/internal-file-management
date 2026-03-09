@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
   const mimeType = file.type || "application/octet-stream";
   const isImage = mimeType.startsWith("image/");
-  const url = `/uploads/${uniqueName}`;
+  const url = `/api/files/${uniqueName}`;
 
   return NextResponse.json({
     type: isImage ? "image" : "file",

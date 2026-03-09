@@ -2,8 +2,6 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import requireAdmin from "./lib/api-auth";
 
-
-
 export function middleware(req: NextRequest) {
   const authError = requireAdmin(req);
   if (authError) return authError;
@@ -12,5 +10,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/"],
+  matcher: ["/", "/uploads/:path*", "/api/files/:path*"],
 };

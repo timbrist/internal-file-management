@@ -14,6 +14,14 @@ function formatDate(value: string) {
   return new Date(value).toLocaleString();
 }
 
+function resolveFileUrl(url: string) {
+  if (url.startsWith("/uploads/")) {
+    return url.replace(/^\/+uploads\//, "/api/files/");
+  }
+
+  return url;
+}
+
 export default function MessageList({
   messages,
   deletingId,
@@ -69,17 +77,22 @@ export default function MessageList({
 
                   {message.attachments.length > 0 && (
                     <div className="grid gap-3 sm:grid-cols-2">
-                      {message.attachments.map((attachment) =>
-                        attachment.type === "image" ? (
+                      {message.attachments.map((attachment) => {
+                        const mainUrl = resolveFileUrl(attachment.url);
+                        const previewUrl = resolveFileUrl(
+                          attachment.thumbnailUrl ?? attachment.url,
+                        );
+
+                        return attachment.type === "image" ? (
                           <a
                             key={attachment.id}
-                            href={attachment.url}
+                            href={mainUrl}
                             target="_blank"
                             rel="noreferrer"
                             className="block overflow-hidden rounded-box border border-base-300"
                           >
                             <img
-                              src={attachment.thumbnailUrl ?? attachment.url}
+                              src={previewUrl}
                               alt={attachment.fileName}
                               className="h-40 w-full object-cover"
                             />
@@ -87,7 +100,7 @@ export default function MessageList({
                         ) : (
                           <a
                             key={attachment.id}
-                            href={attachment.url}
+                            href={mainUrl}
                             target="_blank"
                             rel="noreferrer"
                             className="rounded-box border border-base-300 p-3 hover:bg-base-200"
@@ -99,8 +112,8 @@ export default function MessageList({
                               {formatFileSize(attachment.size)}
                             </p>
                           </a>
-                        ),
-                      )}
+                        );
+                      })}
                     </div>
                   )}
                 </>

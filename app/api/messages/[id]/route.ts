@@ -9,6 +9,22 @@ type Params = {
   params: Promise<{ id: string }>;
 };
 
+function extractUploadTarget(url: string | null | undefined) {
+  if (!url) {
+    return null;
+  }
+
+  if (url.startsWith("/uploads/")) {
+    return url.replace(/^\/+/, "");
+  }
+
+  if (url.startsWith("/api/files/")) {
+    return url.replace(/^\/+api\/files\//, "uploads/");
+  }
+
+  return null;
+}
+
 export async function DELETE(req: NextRequest, { params }: Params) {
   const authError = requireAdmin(req);
   if (authError) {
@@ -46,14 +62,14 @@ export async function DELETE(req: NextRequest, { params }: Params) {
 
   const fileTargets = new Set<string>();
   for (const attachment of existing.attachments) {
-    if (attachment.url.startsWith("/uploads/")) {
-      fileTargets.add(attachment.url.replace(/^\/+/, ""));
+    const fileTarget = extractUploadTarget(attachment.url);
+    if (fileTarget) {
+      fileTargets.add(fileTarget);
     }
-    if (
-      attachment.thumbnailUrl &&
-      attachment.thumbnailUrl.startsWith("/uploads/")
-    ) {
-      fileTargets.add(attachment.thumbnailUrl.replace(/^\/+/, ""));
+
+    const thumbnailTarget = extractUploadTarget(attachment.thumbnailUrl);
+    if (thumbnailTarget) {
+      fileTargets.add(thumbnailTarget);
     }
   }
 

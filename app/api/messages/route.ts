@@ -17,6 +17,29 @@ type CreateMessageBody = {
   attachments?: IncomingAttachment[];
 };
 
+function normalizeFileUrl(url: string) {
+  if (url.startsWith("/uploads/")) {
+    return url.replace(/^\/+uploads\//, "/api/files/");
+  }
+
+  return url;
+}
+
+function normalizeMessageUrls<T extends { attachments: IncomingAttachment[] | Array<{ url: string; thumbnailUrl?: string | null }> }>(
+  message: T,
+) {
+  return {
+    ...message,
+    attachments: message.attachments.map((attachment) => ({
+      ...attachment,
+      url: normalizeFileUrl(attachment.url),
+      thumbnailUrl: attachment.thumbnailUrl
+        ? normalizeFileUrl(attachment.thumbnailUrl)
+        : attachment.thumbnailUrl ?? null,
+    })),
+  };
+}
+
 function parseAttachments(value: unknown): IncomingAttachment[] {
   if (!Array.isArray(value)) {
     return [];
@@ -86,7 +109,7 @@ export async function GET(req: NextRequest) {
     },
   });
 
-  return NextResponse.json(messages);
+  return NextResponse.json(messages.map((message) => normalizeMessageUrls(message)));
 }
 
 export async function POST(req: NextRequest) {
@@ -138,5 +161,5 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return NextResponse.json(message, { status: 201 });
+  return NextResponse.json(normalizeMessageUrls(message), { status: 201 });
 }
