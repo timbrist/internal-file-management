@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Message {
+  id          String       @id @default(cuid())
+  text        String       @default("")
+  createdAt   DateTime     @default(now())
+  deletedAt   DateTime?
+  attachments Attachment[]
+}
+
+model Attachment {
+  id           String         @id @default(cuid())
+  type         AttachmentType
+  fileName     String
+  mimeType     String
+  size         Int
+  url          String
+  thumbnailUrl String?
+  createdAt    DateTime       @default(now())
+  messageId    String
+  message      Message        @relation(fields: [messageId], references: [id], onDelete: Cascade)
+}
+
+enum AttachmentType {
+  image
+  file
+}
